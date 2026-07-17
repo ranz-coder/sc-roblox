@@ -1,5 +1,5 @@
 local games = {
-    [6739698191] = "https://raw.githubusercontent.com/RillBoys/BOLONG-HUB/refs/heads/main/games/ViolenceDistrict.lua"
+    [6739698191] = "https://raw.githubusercontent.com/ranz-coder/sc-roblox/refs/heads/main/ViolenceDistrict.lua"
 }
 
 local StarterGui = game:GetService("StarterGui")
@@ -7,9 +7,9 @@ local Players = game:GetService("Players")
 local HttpService = game:GetService("HttpService")
 
 local gameId = game.GameId
-local logo = "rbxassetid://84034353458936"
+local logo = "https://cdn.ranzzawok.my.id/media/images/med_eaaec621dbe5b13f.png"
 
-local LOG_ENDPOINT = "https://bolonghub.11rill.workers.dev/"
+local LOG_ENDPOINT = ""
 local function notify(title, text, duration)
     pcall(function()
         StarterGui:SetCore("SendNotification", {
@@ -70,7 +70,7 @@ local function loadGameScript(url)
     end)
 
     if not success then
-        notify("BOLONG-HUB Notification", "Failed to load script!", 5)
+        notify("LAPER-HUB Notification", "Gagal load script nya boss, LAPER GANK lagi kenyang!", 5)
         warn("Load error:", result)
     end
 end
@@ -78,7 +78,7 @@ end
 local selectedScript = games[gameId]
 
 if selectedScript then
-    notify("BOLONG-HUB Notification", "Supported Game! Loading...", 5)
+    notify("LAPER-HUB Notification", "Game Mendukung LAPER GANK! Loading...", 5)
 
     task.spawn(function()
         sendUsageLog()
@@ -87,5 +87,5 @@ if selectedScript then
     task.wait(1)
     loadGameScript(selectedScript)
 else
-    notify("BOLONG-HUB Notification", "Unsupported Game! Sorry...", 5)
+    notify("LAPER-HUB Notification", "Game Gak support LAPER GANK! Sorry...", 5)
 end
