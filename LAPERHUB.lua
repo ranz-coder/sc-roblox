@@ -5,9 +5,6 @@ local UserInputService = game:GetService("UserInputService")
 
 local localPlayer = Players.LocalPlayer
 
--- ==========================================
--- 1. FUNGSI DRAGGABLE (UNTUK MENGGESER UI)
--- ==========================================
 local function makeDraggable(gui, dragHandle)
 	local dragging, dragInput, dragStart, startPos
 	
@@ -39,18 +36,13 @@ local function makeDraggable(gui, dragHandle)
 	end)
 end
 
--- ==========================================
--- 2. PEMBUATAN UI UTAMA (MODERN & MEMBULAT)
--- ==========================================
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "LaperGankTeleportGui"
 screenGui.ResetOnSpawn = false
 
--- Menaruh di CoreGui agar aman (jika pakai executor), jika gagal masuk ke PlayerGui
 local success, err = pcall(function() screenGui.Parent = CoreGui end)
 if not success then screenGui.Parent = localPlayer:WaitForChild("PlayerGui") end
 
--- Frame Utama Panel
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 260, 0, 160)
 mainFrame.Position = UDim2.new(0.5, -130, 0.8, -160)
@@ -62,7 +54,6 @@ local uiCornerMain = Instance.new("UICorner")
 uiCornerMain.CornerRadius = UDim.new(0, 12)
 uiCornerMain.Parent = mainFrame
 
--- Top Bar (Untuk area geser & tombol window)
 local topBar = Instance.new("Frame")
 topBar.Size = UDim2.new(1, 0, 0, 35)
 topBar.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
@@ -73,7 +64,6 @@ local uiCornerTop = Instance.new("UICorner")
 uiCornerTop.CornerRadius = UDim.new(0, 12)
 uiCornerTop.Parent = topBar
 
--- Menutupi sudut bawah top bar agar menyatu dengan body
 local topBarCover = Instance.new("Frame")
 topBarCover.Size = UDim2.new(1, 0, 0, 10)
 topBarCover.Position = UDim2.new(0, 0, 1, -10)
@@ -81,9 +71,8 @@ topBarCover.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 topBarCover.BorderSizePixel = 0
 topBarCover.Parent = topBar
 
-makeDraggable(mainFrame, topBar) -- Aktifkan fitur geser
+makeDraggable(mainFrame, topBar)
 
--- Title Panel: LAPER GANK
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(0.6, 0, 1, 0)
 title.Position = UDim2.new(0.05, 0, 0, 0)
@@ -95,7 +84,6 @@ title.TextSize = 15
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = topBar
 
--- Tombol Close (X)
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 25, 0, 25)
 closeBtn.Position = UDim2.new(1, -30, 0.5, -12.5)
@@ -108,8 +96,6 @@ closeBtn.Parent = topBar
 local uiCornerClose = Instance.new("UICorner")
 uiCornerClose.CornerRadius = UDim.new(1, 0)
 uiCornerClose.Parent = closeBtn
-
--- Tombol Minimize (-)
 local minBtn = Instance.new("TextButton")
 minBtn.Size = UDim2.new(0, 25, 0, 25)
 minBtn.Position = UDim2.new(1, -60, 0.5, -12.5)
@@ -123,7 +109,6 @@ local uiCornerMin = Instance.new("UICorner")
 uiCornerMin.CornerRadius = UDim.new(1, 0)
 uiCornerMin.Parent = minBtn
 
--- Dropdown Button
 local dropdownBtn = Instance.new("TextButton")
 dropdownBtn.Size = UDim2.new(0.9, 0, 0, 35)
 dropdownBtn.Position = UDim2.new(0.05, 0, 0, 55)
@@ -137,7 +122,6 @@ local uiCornerDrop = Instance.new("UICorner")
 uiCornerDrop.CornerRadius = UDim.new(0, 8)
 uiCornerDrop.Parent = dropdownBtn
 
--- Tombol Teleport
 local teleportBtn = Instance.new("TextButton")
 teleportBtn.Size = UDim2.new(0.9, 0, 0, 35)
 teleportBtn.Position = UDim2.new(0.05, 0, 0, 100)
@@ -151,7 +135,6 @@ local uiCornerTel = Instance.new("UICorner")
 uiCornerTel.CornerRadius = UDim.new(0, 8)
 uiCornerTel.Parent = teleportBtn
 
--- Daftar Menu Dropdown Player
 local scrollFrame = Instance.new("ScrollingFrame")
 scrollFrame.Size = UDim2.new(0.9, 0, 0, 120)
 scrollFrame.Position = UDim2.new(0.05, 0, 0, 95)
@@ -169,9 +152,6 @@ uiListLayout.SortOrder = Enum.SortOrder.Name
 uiListLayout.Padding = UDim.new(0, 3)
 uiListLayout.Parent = scrollFrame
 
--- ==========================================
--- 3. MINIMIZE ICON (KOTAK KECIL)
--- ==========================================
 local minIcon = Instance.new("ImageButton")
 minIcon.Size = UDim2.new(0, 50, 0, 50)
 minIcon.Position = UDim2.new(0.5, -25, 0.8, -25)
@@ -185,11 +165,8 @@ local uiCornerIcon = Instance.new("UICorner")
 uiCornerIcon.CornerRadius = UDim.new(0, 10)
 uiCornerIcon.Parent = minIcon
 
-makeDraggable(minIcon, minIcon) -- Icon minimize juga bisa digeser
+makeDraggable(minIcon, minIcon)
 
--- ==========================================
--- 4. LOADING SCREEN (SKELETON & LAPER GANK)
--- ==========================================
 local loadingFrame = Instance.new("Frame")
 loadingFrame.Size = UDim2.new(1, 0, 1, 0)
 loadingFrame.Position = UDim2.new(0, 0, 0, 0)
@@ -235,12 +212,8 @@ loadingText.Parent = loadingFrame
 local rotationTweenInfo = TweenInfo.new(1.2, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1)
 local rotateTween = TweenService:Create(loadingCircle, rotationTweenInfo, {Rotation = 360})
 
--- ==========================================
--- 5. LOGIKA & FUNGSI TOMBOL
--- ==========================================
 local selectedPlayer = nil
 
--- Logika Close & Minimize
 closeBtn.MouseButton1Click:Connect(function()
 	screenGui:Destroy()
 end)
@@ -248,16 +221,15 @@ end)
 minBtn.MouseButton1Click:Connect(function()
 	mainFrame.Visible = false
 	minIcon.Visible = true
-	minIcon.Position = mainFrame.Position -- Mengikuti posisi terakhir mainFrame
+	minIcon.Position = mainFrame.Position
 end)
 
 minIcon.MouseButton1Click:Connect(function()
 	minIcon.Visible = false
 	mainFrame.Visible = true
-	mainFrame.Position = minIcon.Position -- Main panel kembali di posisi icon
+	mainFrame.Position = minIcon.Position
 end)
 
--- Dropdown Logika
 local function updatePlayerList()
 	for _, child in ipairs(scrollFrame:GetChildren()) do
 		if child:IsA("TextButton") then child:Destroy() end
@@ -295,7 +267,6 @@ dropdownBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Logika Teleport
 teleportBtn.MouseButton1Click:Connect(function()
 	if not selectedPlayer or not selectedPlayer.Character or not selectedPlayer.Character:FindFirstChild("HumanoidRootPart") then
 		dropdownBtn.Text = "Target Tidak Ditemukan!"
