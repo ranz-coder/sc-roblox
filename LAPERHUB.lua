@@ -12,7 +12,7 @@ local function sendSystemNotification(title, msg, duration)
     end)
 end
 
-local GitHubRawURL = "https://raw.githubusercontent.com/ranz-coder/LaPer-HUB.lua"
+local GitHubRawURL = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/LaPer-HUB.lua"
 
 local isSupportedMap = true 
 
