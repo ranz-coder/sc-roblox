@@ -1,5 +1,4 @@
 local StarterGui = game:GetService("StarterGui")
-local HttpService = game:GetService("HttpService")
 
 local function sendSystemNotification(title, msg, duration)
     pcall(function()
@@ -12,30 +11,34 @@ local function sendSystemNotification(title, msg, duration)
     end)
 end
 
-local GitHubRawURL = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/LaPer-HUB.lua"
+local games = {
+    [6739698191] = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/main/LaPer-HUB.lua"
+}
 
-local isSupportedMap = true 
+local currentPlaceId = game.PlaceId
+local targetScriptURL = games[currentPlaceId]
 
-if not isSupportedMap then
-    sendSystemNotification("LaperGank System", "Peta tidak didukung! System dihentikan.", 5)
-    return
-else
-    sendSystemNotification("LaperGank Ready", "Menghubungkan ke Server...", 3)
+if targetScriptURL then
+    sendSystemNotification("LaperGank System", "Map terdeteksi! Mengunduh LaPer-HUB...", 3)
     
+    -- Mengambil data script utama dari cloud storage GitHub
     local success, scriptContent = pcall(function()
-        return game:HttpGet(GitHubRawURL)
+        return game:HttpGet(targetScriptURL)
     end)
     
     if success and scriptContent then
-        sendSystemNotification("Laper Gank Panel", "Script berhasil diunduh. Memulai UI...", 3)
-        
+        -- Mengonversi raw text menjadi executable environment
         local executeScript, err = loadstring(scriptContent)
         if executeScript then
             executeScript()
+            sendSystemNotification("Laper Gank Panel", "LaPer-HUB Berhasil Dijalankan!", 3)
         else
             sendSystemNotification("Loader Error", "Gagal memproses kode: " .. tostring(err), 5)
         end
     else
-        sendSystemNotification("Connection Error", "Gagal mengambil script dari GitHub! Periksa internet/link.", 5)
+        sendSystemNotification("Connection Error", "Gagal mengambil data dari repositori ranz-coder!", 5)
     end
+else
+    -- Penanganan perlindungan jika dijalankan di luar map Violence District
+    sendSystemNotification("LaperGank System", "LaperGank gak mendukung map ini!", 5)
 end
