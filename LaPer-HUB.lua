@@ -1,8 +1,7 @@
 -- =============================================================================
 -- VIOLENCE DISTRICT — ADMIN GUI (Client)
 -- Taruh di: StarterPlayerScripts (sebagai LocalScript)
--- GUI ini TIDAK punya hak eksekusi apa pun — semua aksi lewat Remote ke server,
--- yang akan menolak siapa pun yang belum lolos password.
+-- GUI ini TIDAK punya hak eksekusi apa pun — semua aksi lewat Remote ke server.
 -- =============================================================================
 
 local Players = game:GetService("Players")
@@ -14,7 +13,6 @@ local localPlayer = Players.LocalPlayer
 local playerGui = localPlayer:WaitForChild("PlayerGui")
 
 local remoteFolder = ReplicatedStorage:WaitForChild("AdminRemotes")
-local SubmitPasswordRemote = remoteFolder:WaitForChild("SubmitPassword")
 local CheckAdminRemote = remoteFolder:WaitForChild("CheckAdminStatus")
 local TeleportRemote = remoteFolder:WaitForChild("TeleportToPlayer")
 local ESPRemote = remoteFolder:WaitForChild("ToggleESP")
@@ -44,7 +42,7 @@ gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 gui.Parent = playerGui
 
 -- -----------------------------------------------------------------------------
--- HELPER: rounded corner + drag (dipakai berulang, ini yang memperbaiki bug "tidak bisa digeser")
+-- HELPER: rounded corner + drag
 -- -----------------------------------------------------------------------------
 local function corner(inst, radius)
     local c = Instance.new("UICorner")
@@ -89,8 +87,6 @@ local function enableDrag(dragHandle, moveFrame)
         end
     end)
 
-    -- Fallback global (penting untuk touch di sebagian executor/device — ini yang
-    -- sering jadi penyebab "tidak bisa digeser" kalau cuma pakai listener lokal)
     UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement
             or input.UserInputType == Enum.UserInputType.Touch) then
@@ -100,66 +96,7 @@ local function enableDrag(dragHandle, moveFrame)
 end
 
 -- =============================================================================
--- 1. PASSWORD GATE — tampil untuk SEMUA pemain saat join
--- =============================================================================
-local gateFrame = Instance.new("Frame")
-gateFrame.Name = "PasswordGate"
-gateFrame.Size = UDim2.new(0, 240, 0, 130)
-gateFrame.Position = UDim2.new(1, -256, 1, -146)
-gateFrame.AnchorPoint = Vector2.new(0, 0)
-gateFrame.BackgroundColor3 = COLOR_BG
-gateFrame.BackgroundTransparency = 0.05
-gateFrame.BorderSizePixel = 0
-gateFrame.Active = true
-gateFrame.Parent = gui
-corner(gateFrame, 14)
-
-local gateStroke = Instance.new("UIStroke")
-gateStroke.Color = COLOR_PURPLE
-gateStroke.Thickness = 1
-gateStroke.Transparency = 0.4
-gateStroke.Parent = gateFrame
-
-local gateTitle = Instance.new("TextLabel")
-gateTitle.Size = UDim2.new(1, -20, 0, 24)
-gateTitle.Position = UDim2.new(0, 10, 0, 10)
-gateTitle.BackgroundTransparency = 1
-gateTitle.Text = "ADMIN ACCESS"
-gateTitle.Font = Enum.Font.GothamBold
-gateTitle.TextSize = 13
-gateTitle.TextColor3 = COLOR_TEXT
-gateTitle.TextXAlignment = Enum.TextXAlignment.Left
-gateTitle.Parent = gateFrame
-
-local gateBox = Instance.new("TextBox")
-gateBox.Size = UDim2.new(1, -20, 0, 34)
-gateBox.Position = UDim2.new(0, 10, 0, 42)
-gateBox.BackgroundColor3 = COLOR_CARD
-gateBox.TextColor3 = COLOR_TEXT
-gateBox.PlaceholderText = "Enter password"
-gateBox.PlaceholderColor3 = COLOR_SUBTEXT
-gateBox.Text = ""
-gateBox.ClearTextOnFocus = false
-gateBox.TextSize = 13
-gateBox.Font = Enum.Font.Gotham
-gateBox.Parent = gateFrame
-corner(gateBox, 8)
-
-local gateBtn = Instance.new("TextButton")
-gateBtn.Size = UDim2.new(1, -20, 0, 32)
-gateBtn.Position = UDim2.new(0, 10, 0, 84)
-gateBtn.BackgroundColor3 = COLOR_PURPLE
-gateBtn.Text = "SUBMIT"
-gateBtn.Font = Enum.Font.GothamBold
-gateBtn.TextSize = 12
-gateBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-gateBtn.Parent = gateFrame
-corner(gateBtn, 8)
-
-enableDrag(gateFrame, gateFrame)
-
--- =============================================================================
--- 2. ADMIN PANEL — dibuat sekali, tersembunyi sampai password benar
+-- 1. ADMIN PANEL 
 -- =============================================================================
 local panel = Instance.new("Frame")
 panel.Name = "AdminPanel"
@@ -168,7 +105,7 @@ panel.Position = UDim2.new(0.5, -130, 0.5, -190)
 panel.BackgroundColor3 = COLOR_BG
 panel.BorderSizePixel = 0
 panel.Active = true
-panel.Visible = false
+panel.Visible = false -- Tersembunyi sampai diverifikasi oleh server
 panel.Parent = gui
 corner(panel, 16)
 
@@ -187,7 +124,7 @@ topBar.Active = true
 topBar.Parent = panel
 corner(topBar, 16)
 
-local topBarCover = Instance.new("Frame") -- menutup sudut bawah topbar
+local topBarCover = Instance.new("Frame")
 topBarCover.Size = UDim2.new(1, 0, 0, 12)
 topBarCover.Position = UDim2.new(0, 0, 1, -12)
 topBarCover.BackgroundColor3 = COLOR_CARD
@@ -243,7 +180,7 @@ listLabel.TextColor3 = COLOR_SUBTEXT
 listLabel.TextXAlignment = Enum.TextXAlignment.Left
 listLabel.Parent = panel
 
--- SCROLLING PLAYER LIST (kartu)
+-- SCROLLING PLAYER LIST
 local scrollFrame = Instance.new("ScrollingFrame")
 scrollFrame.Size = UDim2.new(1, -28, 0, 140)
 scrollFrame.Position = UDim2.new(0, 14, 0, 72)
@@ -308,7 +245,7 @@ local minIcon = Instance.new("ImageButton")
 minIcon.Size = UDim2.new(0, 52, 0, 52)
 minIcon.Position = UDim2.new(0, 20, 1, -90)
 minIcon.BackgroundColor3 = COLOR_BG
-minIcon.Image = "" -- taruh assetid ikon kamu sendiri di sini
+minIcon.Image = "" 
 minIcon.ScaleType = Enum.ScaleType.Fit
 minIcon.Visible = false
 minIcon.Active = true
@@ -320,7 +257,7 @@ minIconStroke.Color = COLOR_PURPLE
 minIconStroke.Thickness = 2
 minIconStroke.Parent = minIcon
 
-local minIconLabel = Instance.new("TextLabel") -- fallback kalau Image kosong
+local minIconLabel = Instance.new("TextLabel")
 minIconLabel.Size = UDim2.new(1, 0, 1, 0)
 minIconLabel.BackgroundTransparency = 1
 minIconLabel.Text = "VD"
@@ -339,7 +276,7 @@ local espBoxOn, espNameOn = false, false
 local playerCards = {}
 
 -- -----------------------------------------------------------------------------
--- REFRESH PLAYER LIST (dari server — memperbaiki bug "tidak muncul apa apa")
+-- REFRESH PLAYER LIST
 -- -----------------------------------------------------------------------------
 local function refreshPlayerList()
     for _, card in pairs(playerCards) do
@@ -388,42 +325,19 @@ Players.PlayerRemoving:Connect(function()
 end)
 
 -- -----------------------------------------------------------------------------
--- UNLOCK PANEL setelah password benar
+-- STARTUP CHECK (VERIFIKASI ADMIN)
 -- -----------------------------------------------------------------------------
-local function unlockPanel()
-    gateFrame:Destroy()
-    panel.Visible = true
-    refreshPlayerList()
-end
-
-gateBtn.Activated:Connect(function()
-    local password = gateBox.Text
-    if password == "" then return end
-
-    gateBtn.Text = "CHECKING..."
-    local ok, success, message = pcall(function()
-        return SubmitPasswordRemote:InvokeServer(password)
-    end)
-
-    if ok and success then
-        unlockPanel()
-    else
-        gateBtn.Text = "WRONG PASSWORD"
-        gateBtn.BackgroundColor3 = COLOR_DANGER
-        task.wait(1.2)
-        gateBtn.Text = "SUBMIT"
-        gateBtn.BackgroundColor3 = COLOR_PURPLE
-        gateBox.Text = ""
-    end
-end)
-
--- Cek kalau player ini sudah pernah jadi admin sebelumnya (dari DataStore) → langsung buka
 task.spawn(function()
-    local ok, alreadyAdmin = pcall(function()
+    local ok, isAuthorizedAdmin = pcall(function()
         return CheckAdminRemote:InvokeServer()
     end)
-    if ok and alreadyAdmin then
-        unlockPanel()
+    
+    if ok and isAuthorizedAdmin then
+        panel.Visible = true
+        refreshPlayerList()
+    else
+        -- Hapus GUI jika bukan admin agar tidak memenuhi memori client biasa
+        gui:Destroy()
     end
 end)
 
