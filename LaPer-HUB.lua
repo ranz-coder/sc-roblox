@@ -67,3 +67,129 @@ end)
 closeBtn.Activated:Connect(function() screen:Destroy() end)
 
 -- [TIPS] Tambahkan ESP atau list pemain di bawah sini setelah ini berhasil muncul
+-- -----------------------------------------------------------------------------
+-- SISTEM PLAYER LIST OTOMATIS
+-- -----------------------------------------------------------------------------
+local function updatePlayerList()
+    -- Bersihkan list lama
+    for _, child in ipairs(scrollFrame:GetChildren()) do
+        if child:IsA("TextButton") then child:Destroy() end
+    end
+    
+    -- Isi dengan player aktif
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= localPlayer then
+            local btn = Instance.new("TextButton")
+            btn.Size = UDim2.new(1, -6, 0, 30)
+            btn.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+            btn.Text = "  " .. player.Name
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            btn.Font = Enum.Font.GothamMedium
+            btn.TextSize = 12
+            btn.TextXAlignment = Enum.TextXAlignment.Left
+            btn.Parent = scrollFrame
+            Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
+            
+            -- [DELTA FIX] Menggunakan .Activated untuk sentuhan layar
+            btn.Activated:Connect(function()
+                selectedPlayer = player
+                
+                -- Reset warna tombol lain
+                for _, b in ipairs(scrollFrame:GetChildren()) do
+                    if b:IsA("TextButton") then b.BackgroundColor3 = Color3.fromRGB(45, 45, 50) end
+                end
+                -- Beri warna pada tombol yang dipilih
+                btn.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
+                
+                teleportBtn.Text = "TP KE: " .. player.Name
+                teleportBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+                teleportBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            end)
+        end
+    end
+end
+
+Players.PlayerAdded:Connect(updatePlayerList)
+Players.PlayerRemoving:Connect(updatePlayerList)
+updatePlayerList()
+
+-- -----------------------------------------------------------------------------
+-- SISTEM ESP (HIGHLIGHT BOX & NAME BILLBOARD)
+-- -----------------------------------------------------------------------------
+local function cleanESP()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player.Character then
+            local hl = player.Character:FindFirstChild("LaperBox")
+            if hl then hl:Destroy() end
+            
+            local head = player.Character:FindFirstChild("Head") or player.Character:FindFirstChild("HumanoidRootPart")
+            if head then
+                local bb = head:FindFirstChild("LaperName")
+                if bb then bb:Destroy() end
+            end
+        end
+    end
+end
+
+local function refreshESP()
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= localPlayer and player.Character then
+            local char = player.Character
+            
+            -- LOGIKA ESP BOX
+            if ESPSettings.Box then
+                local hl = char:FindFirstChild("LaperBox")
+                if not hl then
+                    hl = Instance.new("Highlight")
+                    hl.Name = "LaperBox"
+                    hl.FillColor = Color3.fromRGB(255, 60, 60)
+                    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                    hl.FillTransparency = 0.6
+                    hl.OutlineTransparency = 0
+                    hl.Parent = char
+                end
+            else
+                local hl = char:FindFirstChild("LaperBox")
+                if hl then hl:Destroy() end
+            end
+            
+            -- LOGIKA ESP NAME
+            if ESPSettings.Name then
+                local head = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
+                if head then
+                    local bb = head:FindFirstChild("LaperName")
+                    if not bb then
+                        bb = Instance.new("BillboardGui")
+                        bb.Name = "LaperName"
+                        bb.Size = UDim2.new(0, 200, 0, 50)
+                        bb.StudsOffset = Vector3.new(0, 2.5, 0)
+                        bb.AlwaysOnTop = true
+                        
+                        local txt = Instance.new("TextLabel")
+                        txt.Size = UDim2.new(1, 0, 1, 0)
+                        txt.BackgroundTransparency = 1
+                        txt.Text = player.Name
+                        txt.TextColor3 = Color3.fromRGB(255, 255, 255)
+                        txt.TextStrokeTransparency = 0
+                        txt.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+                        txt.Font = Enum.Font.GothamBold
+                        txt.TextSize = 13
+                        txt.Parent = bb
+                        bb.Parent = head
+                    end
+                end
+            else
+                local head = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
+                if head then
+                    local bb = head:FindFirstChild("LaperName")
+                    if bb then bb:Destroy() end
+                end
+            end
+        end
+    end
+end
+
+-- Update ESP menggunakan Heartbeat agar stabil di Eksekutor
+RunService.Heartbeat:Connect(function()
+    pcall(refreshESP)
+end)
