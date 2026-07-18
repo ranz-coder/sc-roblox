@@ -1,6 +1,6 @@
 -- =============================================================================
--- PROJECT NAME: Laper Gank Admin - Lightweight ESP & TP Edition
--- STATUS: 100% Anti-Ghost UI / Solid Click Detection
+-- PROJECT NAME: Laper Gank Admin - Executor Whitelist Edition
+-- STATUS: Executor-Safe API / ESP Heartbeat / Anti-Crash
 -- =============================================================================
 
 local Players = game:GetService("Players")
@@ -18,19 +18,33 @@ local ESPSettings = {
 }
 
 -- -----------------------------------------------------------------------------
--- PEMBERSIHAN GUI LAMA (Agar tidak double)
+-- EXECUTOR SAFE PARENTING (Bypass Proteksi Eksekutor)
 -- -----------------------------------------------------------------------------
-local guiName = "LaperGankHub"
-local targetParent = CoreGui
-if not pcall(function() local a = CoreGui.Name end) then
-    targetParent = localPlayer:WaitForChild("PlayerGui")
+local guiName = "LaperGankHub_Executor"
+local targetParent
+
+-- Mencoba menggunakan fitur proteksi bawaan eksekutor (gethui)
+local successHui, huiParent = pcall(function() return gethui() end)
+if successHui and huiParent then
+    targetParent = huiParent
+else
+    -- Jika diblokir, berlindung di PlayerGui
+    local successCore, _ = pcall(function() 
+        local test = CoreGui.Name 
+    end)
+    if successCore then
+        targetParent = CoreGui
+    else
+        targetParent = localPlayer:WaitForChild("PlayerGui")
+    end
 end
 
+-- Membersihkan UI lama agar tidak menumpuk saat di-execute ulang
 local oldGui = targetParent:FindFirstChild(guiName)
 if oldGui then oldGui:Destroy() end
 
 -- -----------------------------------------------------------------------------
--- FUNGSI DRAGGABLE (Bisa digeser)
+-- FUNGSI DRAGGABLE
 -- -----------------------------------------------------------------------------
 local function makeDraggable(gui, dragHandle)
     local dragging, dragInput, dragStart, startPos
@@ -63,9 +77,9 @@ end
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = guiName
 screenGui.ResetOnSpawn = false
+screenGui.DisplayOrder = 100
 screenGui.Parent = targetParent
 
--- FRAME UTAMA
 local mainFrame = Instance.new("Frame")
 mainFrame.Size = UDim2.new(0, 280, 0, 320)
 mainFrame.Position = UDim2.new(0.5, -140, 0.5, -160)
@@ -75,16 +89,13 @@ mainFrame.Active = true
 mainFrame.Parent = screenGui
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 10)
 
--- TOP BAR (Untuk Geser)
 local topBar = Instance.new("Frame")
 topBar.Size = UDim2.new(1, 0, 0, 35)
 topBar.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 topBar.BorderSizePixel = 0
-topBar.Active = true
 topBar.Parent = mainFrame
 Instance.new("UICorner", topBar).CornerRadius = UDim.new(0, 10)
 
--- PENUTUP SUDUT BAWAH TOPBAR
 local topBarCover = Instance.new("Frame")
 topBarCover.Size = UDim2.new(1, 0, 0, 10)
 topBarCover.Position = UDim2.new(0, 0, 1, -10)
@@ -94,7 +105,6 @@ topBarCover.Parent = topBar
 
 makeDraggable(mainFrame, topBar)
 
--- JUDUL TEXT
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(0.6, 0, 1, 0)
 title.Position = UDim2.new(0.05, 0, 0, 0)
@@ -106,7 +116,6 @@ title.TextSize = 13
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = topBar
 
--- TOMBOL CLOSE
 local closeBtn = Instance.new("TextButton")
 closeBtn.Size = UDim2.new(0, 22, 0, 22)
 closeBtn.Position = UDim2.new(1, -27, 0.5, -11)
@@ -118,7 +127,6 @@ closeBtn.TextSize = 16
 closeBtn.Parent = topBar
 Instance.new("UICorner", closeBtn).CornerRadius = UDim.new(1, 0)
 
--- TOMBOL MINIMIZE
 local minBtn = Instance.new("TextButton")
 minBtn.Size = UDim2.new(0, 22, 0, 22)
 minBtn.Position = UDim2.new(1, -54, 0.5, -11)
@@ -138,7 +146,6 @@ scrollFrame.BackgroundColor3 = Color3.fromRGB(22, 22, 25)
 scrollFrame.BorderSizePixel = 0
 scrollFrame.ScrollBarThickness = 4
 scrollFrame.AutomaticCanvasSize = Enum.AutomaticCanvasSize.Y
-scrollFrame.Active = true
 scrollFrame.Parent = mainFrame
 Instance.new("UICorner", scrollFrame).CornerRadius = UDim.new(0, 6)
 
@@ -147,7 +154,6 @@ uiListLayout.SortOrder = Enum.SortOrder.Name
 uiListLayout.Padding = UDim.new(0, 4)
 uiListLayout.Parent = scrollFrame
 
--- TOMBOL EKSEKUSI TELEPORT
 local teleportBtn = Instance.new("TextButton")
 teleportBtn.Size = UDim2.new(0.9, 0, 0, 35)
 teleportBtn.Position = UDim2.new(0.05, 0, 0, 185)
@@ -159,7 +165,6 @@ teleportBtn.TextSize = 12
 teleportBtn.Parent = mainFrame
 Instance.new("UICorner", teleportBtn).CornerRadius = UDim.new(0, 6)
 
--- TOMBOL TOGGLE ESP BOX
 local espBoxBtn = Instance.new("TextButton")
 espBoxBtn.Size = UDim2.new(0.9, 0, 0, 32)
 espBoxBtn.Position = UDim2.new(0.05, 0, 0, 230)
@@ -171,7 +176,6 @@ espBoxBtn.TextSize = 11
 espBoxBtn.Parent = mainFrame
 Instance.new("UICorner", espBoxBtn).CornerRadius = UDim.new(0, 5)
 
--- TOMBOL TOGGLE ESP NAME
 local espNameBtn = Instance.new("TextButton")
 espNameBtn.Size = UDim2.new(0.9, 0, 0, 32)
 espNameBtn.Position = UDim2.new(0.05, 0, 0, 272)
@@ -183,7 +187,7 @@ espNameBtn.TextSize = 11
 espNameBtn.Parent = mainFrame
 Instance.new("UICorner", espNameBtn).CornerRadius = UDim.new(0, 5)
 
--- ICON MINIMIZE (Logo Laper Gank)
+-- ICON MINIMIZE
 local minIcon = Instance.new("ImageButton")
 minIcon.Size = UDim2.new(0, 50, 0, 50)
 minIcon.Position = UDim2.new(0.5, -25, 0.8, -25)
@@ -191,20 +195,19 @@ minIcon.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
 minIcon.Image = "rbxassetid://128042443413755"
 minIcon.ScaleType = Enum.ScaleType.Fit
 minIcon.Visible = false
-minIcon.Active = true
 minIcon.Parent = screenGui
 Instance.new("UICorner", minIcon).CornerRadius = UDim.new(1, 0)
 makeDraggable(minIcon, minIcon)
 
 -- -----------------------------------------------------------------------------
--- SISTEM ESP RINGAN (HIGHLIGHT & BILLBOARD)
+-- SISTEM ESP RINGAN (Aman untuk Executor Threading)
 -- -----------------------------------------------------------------------------
 local function refreshESP()
     for _, player in ipairs(Players:GetPlayers()) do
         if player ~= localPlayer and player.Character then
             local char = player.Character
             
-            -- LOGIKA ESP BOX (HIGHLIGHT)
+            -- LOGIKA ESP BOX
             local hl = char:FindFirstChild("LaperESPBox")
             if ESPSettings.Box then
                 if not hl then
@@ -221,7 +224,7 @@ local function refreshESP()
                 if hl then hl.Enabled = false end
             end
             
-            -- LOGIKA ESP NAME (BILLBOARD GUI)
+            -- LOGIKA ESP NAME
             local head = char:FindFirstChild("Head") or char:FindFirstChild("HumanoidRootPart")
             if head then
                 local bb = head:FindFirstChild("LaperESPName")
@@ -254,9 +257,9 @@ local function refreshESP()
     end
 end
 
--- Looping Ringan untuk Update ESP ke pemain yang baru respawn
-RunService.RenderStepped:Connect(function()
-    refreshESP()
+-- Menggunakan Heartbeat agar tidak crash di Executor
+RunService.Heartbeat:Connect(function()
+    pcall(refreshESP)
 end)
 
 -- -----------------------------------------------------------------------------
@@ -280,11 +283,9 @@ local function updatePlayerList()
             btn.Parent = scrollFrame
             Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 4)
             
-            -- MENGGUNAKAN MouseButton1Down AGAR 100% TERBACA EXECUTOR
-            btn.MouseButton1Down:Connect(function()
+            btn.MouseButton1Click:Connect(function()
                 selectedPlayer = player
                 
-                -- Hapus warna tombol lain, warnai yang diklik
                 for _, b in ipairs(scrollFrame:GetChildren()) do
                     if b:IsA("TextButton") then b.BackgroundColor3 = Color3.fromRGB(45, 45, 50) end
                 end
@@ -303,25 +304,25 @@ Players.PlayerRemoving:Connect(updatePlayerList)
 updatePlayerList()
 
 -- -----------------------------------------------------------------------------
--- BINDING INTERAKSI UI (Menggunakan MouseButton1Down agar fix)
+-- BINDING INTERAKSI UI
 -- -----------------------------------------------------------------------------
-closeBtn.MouseButton1Down:Connect(function() 
+closeBtn.MouseButton1Click:Connect(function() 
     screenGui:Destroy() 
 end)
 
-minBtn.MouseButton1Down:Connect(function()
+minBtn.MouseButton1Click:Connect(function()
     mainFrame.Visible = false
     minIcon.Visible = true
     minIcon.Position = mainFrame.Position
 end)
 
-minIcon.MouseButton1Down:Connect(function()
+minIcon.MouseButton1Click:Connect(function()
     minIcon.Visible = false
     mainFrame.Visible = true
     mainFrame.Position = minIcon.Position
 end)
 
-espBoxBtn.MouseButton1Down:Connect(function()
+espBoxBtn.MouseButton1Click:Connect(function()
     ESPSettings.Box = not ESPSettings.Box
     if ESPSettings.Box then
         espBoxBtn.Text = "TOGGLE ESP BOX: ON"
@@ -334,7 +335,7 @@ espBoxBtn.MouseButton1Down:Connect(function()
     end
 end)
 
-espNameBtn.MouseButton1Down:Connect(function()
+espNameBtn.MouseButton1Click:Connect(function()
     ESPSettings.Name = not ESPSettings.Name
     if ESPSettings.Name then
         espNameBtn.Text = "TOGGLE ESP NAME: ON"
@@ -347,7 +348,7 @@ espNameBtn.MouseButton1Down:Connect(function()
     end
 end)
 
-teleportBtn.MouseButton1Down:Connect(function()
+teleportBtn.MouseButton1Click:Connect(function()
     if isTeleporting or not selectedPlayer then return end
     
     local targetChar = selectedPlayer.Character
