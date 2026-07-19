@@ -12,7 +12,7 @@ local function sendSystemNotification(title, msg, duration)
 end
 
 local games = {
-    [93978595733734] = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-VD.lua"
+    [] = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI.lua"
 }
 
 local currentPlaceId = game.PlaceId
