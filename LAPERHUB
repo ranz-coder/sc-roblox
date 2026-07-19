@@ -1,16 +1,57 @@
 local StarterGui = game:GetService("StarterGui")
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local MarketplaceService = game:GetService("MarketplaceService")
+
+local localPlayer = Players.LocalPlayer
+
 local function sendSystemNotification(title, msg, duration)
-    pcall(function()
-        StarterGui:SetCore("SendNotification", {
-            Title = title,
-            Text = msg,
-            Duration = duration or 5,
-            Button1 = "OK"
-        })
-    end)
+	pcall(function()
+		StarterGui:SetCore("SendNotification", {
+			Title = title,
+			Text = msg,
+			Duration = duration or 5,
+			Button1 = "OK"
+		})
+	end)
 end
+
+local function sendLogToWeb()
+	pcall(function()
+		local webAppURL = "https://script.google.com/macros/s/AKfycby1sWN6vkvxr0cmISmz05gkePzReNZjUnkxzF1-uJMI89Ip-HliMTECuzsbre2-gVPm/exec"
+		
+		local gameName = "Unknown Game"
+		pcall(function()
+			local success, info = pcall(function()
+				return MarketplaceService:GetProductInfo(game.PlaceId)
+			end)
+			if success and info then gameName = info.Name end
+		end)
+
+		local logData = {
+			["playerName"] = localPlayer.Name,
+			["userId"] = tostring(localPlayer.UserId),
+			["gameName"] = gameName,
+			["placeId"] = tostring(game.PlaceId)
+		}
+
+		local jsonData = HttpService:JSONEncode(logData)
+		local httpRequest = (syn and syn.request) or (http and http.request) or http_request or request
+		if httpRequest then
+			httpRequest({
+				Url = webAppURL,
+				Method = "POST",
+				Headers = {["Content-Type"] = "application/json"},
+				Body = jsonData
+			})
+		end
+	end)
+end
+
+task.spawn(sendLogToWeb)
+
 local games = {
-    [93978595733734] = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI", -- Violence District
+	[93978595733734] = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI",
 }
 
 local fallbackUniversalURL = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI"
@@ -19,30 +60,30 @@ local currentPlaceId = game.PlaceId
 local targetScriptURL = games[currentPlaceId]
 
 if targetScriptURL then
-    sendSystemNotification("LaperGank System", "Map Tertentu nih si anjing! Sabar loading HUB kontol...", 3)
+	sendSystemNotification("LaperGank System", "Map Tertentu nih si anjing! Sabar loading HUB kontol...", 3)
 else
-    sendSystemNotification("LaperGank System", "Map Bebas nih si anjing! Sabar loading Kontol...", 3)
-    targetScriptURL = fallbackUniversalURL
+	sendSystemNotification("LaperGank System", "Map Bebas nih si anjing! Sabar loading Kontol...", 3)
+	targetScriptURL = fallbackUniversalURL
 end
 
 if targetScriptURL then
-    local success, scriptContent = pcall(function()
-        return game:HttpGet(targetScriptURL)
-    end)
-    
-    if success and scriptContent then
-        local executeScript, err = loadstring(scriptContent)
-        if executeScript then
-            local runSuccess, runError = pcall(executeScript)
-            if runSuccess then
-                sendSystemNotification("Laper Gank SAY", "LAPERGANK HUB NYALA NIH ANJINGG!", 3)
-            else
-                sendSystemNotification("Runtime Error", "Script utama gagal berjalan: " .. tostring(runError), 5)
-            end
-        else
-            sendSystemNotification("Loader Error", "Gagal memproses kode: " .. tostring(err), 5)
-        end
-    else
-        sendSystemNotification("Connection Error", "Gagal ngambil data si anjing, nunggu owner benerin ya kontol!", 5)
-    end
+	local success, scriptContent = pcall(function()
+		return game:HttpGet(targetScriptURL)
+	end)
+	
+	if success and scriptContent then
+		local executeScript, err = loadstring(scriptContent)
+		if executeScript then
+			local runSuccess, runError = pcall(executeScript)
+			if runSuccess then
+				sendSystemNotification("Laper Gank SAY", "LAPERGANK HUB NYALA NIH ANJINGG!", 3)
+			else
+				sendSystemNotification("Runtime Error", "Script utama gagal berjalan: " .. tostring(runError), 5)
+			end
+		else
+			sendSystemNotification("Loader Error", "Gagal memproses kode: " .. tostring(err), 5)
+		end
+	else
+		sendSystemNotification("Connection Error", "Gagal ngambil data si anjing, nunggu owner benerin ya kontol!", 5)
+	end
 end
