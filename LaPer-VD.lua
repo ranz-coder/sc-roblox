@@ -1,5 +1,5 @@
 -- =============================================================================
--- PROJECT: LAPER GANK ADMIN - CORE TELEPORT CONVERTED BUILD
+-- PROJECT: LAPER GANK ADMIN - INSTANT TELEPORT EDITION (NO DELAY)
 -- TEMA: Android Mobile App (Abu-abu Gelap, Ungu & Biru Neon)
 -- OPTIMASI: 100% Delta Executor Mobile Safe (Menggunakan .Activated)
 -- =============================================================================
@@ -82,8 +82,8 @@ end
 
 -- Frame Utama (Latar Abu-abu Gelap Ramping)
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 260, 0, 220)
-mainFrame.Position = UDim2.new(0.5, -130, 0.5, -110)
+mainFrame.Size = UDim2.new(0, 260, 0, 200)
+mainFrame.Position = UDim2.new(0.5, -130, 0.5, -100)
 mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 28)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -233,7 +233,7 @@ end)
 minBtn.Activated:Connect(function()
 	mainFrame.Visible = false
 	minIcon.Visible = true
-	minIcon.Position = UDim2.new(0, mainFrame.AbsolutePosition.X + 105, 0, mainFrame.AbsolutePosition.Y + 85)
+	minIcon.Position = UDim2.new(0, mainFrame.AbsolutePosition.X + 105, 0, mainFrame.AbsolutePosition.Y + 75)
 end)
 
 minIcon.Activated:Connect(function()
@@ -276,7 +276,7 @@ dropdownBtn.Activated:Connect(function()
 	if scrollFrame.Visible then updatePlayerList() end
 end)
 
--- Sistem Driver Teleport Asli Menggunakan .Activated Sentuh Layar
+-- Sistem Driver Teleport INSTAN Tanpa Delay Detik
 teleportBtn.Activated:Connect(function()
 	if isTeleporting then return end
 	
@@ -292,15 +292,8 @@ teleportBtn.Activated:Connect(function()
 	
 	isTeleporting = true
 	scrollFrame.Visible = false
-	teleportBtn.BackgroundColor3 = Color3.fromRGB(100, 40, 40)
 	
-	-- Loading Detik Membaca Data Player Target
-	for i = 3, 1, -1 do
-		teleportBtn.Text = "TELEPORTING IN " .. i .. "s..."
-		task.wait(1)
-	end
-	
-	-- Proses Instan Teleport setelah Loading Detik Selesai
+	-- Proses Instan Teleportasi Langsung (Seketika)
 	if selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("HumanoidRootPart") and myChar:FindFirstChild("HumanoidRootPart") then
 		local targetCFrame = selectedPlayer.Character.HumanoidRootPart.CFrame
 		myChar.HumanoidRootPart.CFrame = targetCFrame * CFrame.new(0, 0, 3)
@@ -308,7 +301,7 @@ teleportBtn.Activated:Connect(function()
 		showNotification("LaperGank Error", "Gagal memuat koordinat target!", 3)
 	end
 	
-	-- Reset State Tombol
+	-- Reset State Tombol Instan
 	teleportBtn.BackgroundColor3 = Color3.fromRGB(32, 32, 38)
 	teleportBtn.Text = "EXECUTE TELEPORT"
 	dropdownBtn.Text = "Pilih Target..."
