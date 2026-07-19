@@ -1,3 +1,9 @@
+-- =============================================================================
+-- PROJECT: LAPER GANK ADMIN - PREMIUM ANDROID HUD DASBOR (BYPASS SPEED EDITION)
+-- TEMA: Android Mobile App (Abu-abu Gelap, Ungu & Biru Neon)
+-- OPTIMASI: 100% Delta Executor Mobile Safe & Anti-Cheat Speed Bypass
+-- =============================================================================
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
