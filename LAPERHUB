@@ -16,7 +16,7 @@ local function sendSystemNotification(title, msg, duration)
 	end)
 end
 
-local function sendLogToWeb()
+local function sendLogToWeb(statusMessage)
 	pcall(function()
 		local webAppURL = "https://script.google.com/macros/s/AKfycby1sWN6vkvxr0cmISmz05gkePzReNZjUnkxzF1-uJMI89Ip-HliMTECuzsbre2-gVPm/exec"
 		
@@ -32,29 +32,29 @@ local function sendLogToWeb()
 			["playerName"] = localPlayer.Name,
 			["userId"] = tostring(localPlayer.UserId),
 			["gameName"] = gameName,
-			["placeId"] = tostring(game.PlaceId)
+			["placeId"] = tostring(game.PlaceId),
+			["status"] = statusMessage -- Mengirimkan teks status ke Kolom F
 		}
 
 		local jsonData = HttpService:JSONEncode(logData)
-		local httpRequest = (syn and syn.request) or (http and http.request) or http_request or request
-		if httpRequest then
-			httpRequest({
+		local requestFunction = request or http_request or (http and http.request) or (syn and syn.request)
+		
+		if requestFunction then
+			requestFunction({
 				Url = webAppURL,
 				Method = "POST",
-				Headers = {["Content-Type"] = "application/json"},
+				Headers = {["Content-Type"] = "text/plain"},
 				Body = jsonData
 			})
 		end
 	end)
 end
 
-task.spawn(sendLogToWeb)
-
 local games = {
-	[93978595733734] = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI",
+	[93978595733734] = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-HUB.lua",
 }
 
-local fallbackUniversalURL = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI"
+local fallbackUniversalURL = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI.lua"
 
 local currentPlaceId = game.PlaceId
 local targetScriptURL = games[currentPlaceId]
@@ -77,13 +77,17 @@ if targetScriptURL then
 			local runSuccess, runError = pcall(executeScript)
 			if runSuccess then
 				sendSystemNotification("Laper Gank SAY", "LAPERGANK HUB NYALA NIH ANJINGG!", 3)
+				task.spawn(function() sendLogToWeb("Success") end)
 			else
 				sendSystemNotification("Runtime Error", "Script utama gagal berjalan: " .. tostring(runError), 5)
+				task.spawn(function() sendLogToWeb("Runtime Error: " .. tostring(runError)) end)
 			end
 		else
 			sendSystemNotification("Loader Error", "Gagal memproses kode: " .. tostring(err), 5)
+			task.spawn(function() sendLogToWeb("Compile Error: " .. tostring(err)) end)
 		end
 	else
 		sendSystemNotification("Connection Error", "Gagal ngambil data si anjing, nunggu owner benerin ya kontol!", 5)
+		task.spawn(function() sendLogToWeb("HTTP Connection Error (404/Timeout)") end)
 	end
 end
