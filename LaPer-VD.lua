@@ -1,3 +1,9 @@
+-- =============================================================================
+-- PROJECT: LAPER GANK ADMIN - CORE TELEPORT CONVERTED BUILD
+-- TEMA: Android Mobile App (Abu-abu Gelap, Ungu & Biru Neon)
+-- OPTIMASI: 100% Delta Executor Mobile Safe (Menggunakan .Activated)
+-- =============================================================================
+
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
@@ -6,7 +12,7 @@ local StarterGui = game:GetService("StarterGui")
 
 local localPlayer = Players.LocalPlayer
 
--- Fungsi Notifikasi Bawaan Roblox
+-- Fungsi Notifikasi Bawaan Asli Anda
 local function showNotification(title, text, duration)
 	pcall(function()
 		StarterGui:SetCore("SendNotification", {
@@ -17,14 +23,34 @@ local function showNotification(title, text, duration)
 	end)
 end
 
--- Proteksi & Cek Map/Support (Sistem Admin Teleport Anda)
-local isSupported = true -- Ubah ke false jika ingin test kondisi "tidak mendukung"
+local isSupported = true
 if not isSupported then
 	showNotification("LaperGank", "LaperGank gak mendukung", 5)
 	return
 end
 
--- Fungsi Drag UI Moderen
+-- Deteksi Parent UI yang Aman untuk Delta (Bypass Freeze/Blank Screen)
+local targetParent = type(gethui) == "function" and gethui() or CoreGui
+if not targetParent or not pcall(function() return targetParent.Name end) then
+	targetParent = localPlayer:WaitForChild("PlayerGui")
+end
+
+-- Bersihkan Sisa Instansi GUI Lama
+local oldGui = targetParent:FindFirstChild("LaperGankAdminTeleport")
+if oldGui then oldGui:Destroy() end
+
+-- Inisialisasi ScreenGui Utama
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "LaperGankAdminTeleport"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Parent = targetParent
+
+showNotification("LaperGank", "LaperGank mendukung", 5)
+
+-- -----------------------------------------------------------------------------
+-- MODUL TOUCH DRAG (Dioptimalkan Khusus HP Android)
+-- -----------------------------------------------------------------------------
 local function makeDraggable(gui, dragHandle)
 	local dragging, dragInput, dragStart, startPos
 	dragHandle.InputBegan:Connect(function(input)
@@ -50,197 +76,192 @@ local function makeDraggable(gui, dragHandle)
 	end)
 end
 
--- Inisialisasi GUI utama
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "LaperGankAdminTeleport"
-screenGui.ResetOnSpawn = false
+-- -----------------------------------------------------------------------------
+-- DESAIN DASBOR ANDROID MOBILE HUD
+-- -----------------------------------------------------------------------------
 
--- Mengamankan UI ke CoreGui/PlayerGui
-local success, err = pcall(function() screenGui.Parent = CoreGui end)
-if not success then 
-	local pguiSuccess = pcall(function() screenGui.Parent = localPlayer:WaitForChild("PlayerGui") end)
-	if not pguiSuccess then
-		showNotification("LaperGank", "Sory!! LaperGank lagi kenyang", 5)
-		return
-	end
-end
-
--- Notifikasi Berhasil Di-load
-showNotification("LaperGank", "LaperGank mendukung", 5)
-
--- Frame Utama UI (Dibuat Lebih Tipis & Clean)
+-- Frame Utama (Latar Abu-abu Gelap Ramping)
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 260, 0, 150)
-mainFrame.Position = UDim2.new(0.5, -130, 0.5, -75)
-mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+mainFrame.Size = UDim2.new(0, 260, 0, 220)
+mainFrame.Position = UDim2.new(0.5, -130, 0.5, -110)
+mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 28)
 mainFrame.BorderSizePixel = 0
+mainFrame.Active = true
 mainFrame.Parent = screenGui
+Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 12)
 
-local uiCornerMain = Instance.new("UICorner")
-uiCornerMain.CornerRadius = UDim.new(0, 10)
-uiCornerMain.Parent = mainFrame
+-- Aksen Garis Tepi Ungu Neon Mencolok
+local mainStroke = Instance.new("UIStroke")
+mainStroke.Color = Color3.fromRGB(138, 43, 226)
+mainStroke.Thickness = 2
+mainStroke.Parent = mainFrame
 
--- Top Bar (Header)
+-- Top Bar Header
 local topBar = Instance.new("Frame")
-topBar.Size = UDim2.new(1, 0, 0, 35)
-topBar.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+topBar.Size = UDim2.new(1, 0, 0, 38)
+topBar.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
 topBar.BorderSizePixel = 0
 topBar.Parent = mainFrame
-
-local uiCornerTop = Instance.new("UICorner")
-uiCornerTop.CornerRadius = UDim.new(0, 10)
-uiCornerTop.Parent = topBar
+Instance.new("UICorner", topBar).CornerRadius = UDim.new(0, 12)
 
 local topBarCover = Instance.new("Frame")
 topBarCover.Size = UDim2.new(1, 0, 0, 10)
 topBarCover.Position = UDim2.new(0, 0, 1, -10)
-topBarCover.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
+topBarCover.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
 topBarCover.BorderSizePixel = 0
 topBarCover.Parent = topBar
 
 makeDraggable(mainFrame, topBar)
 
--- Judul UI
+-- Judul Aplikasi (Aksen Biru Neon)
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(0.6, 0, 1, 0)
 title.Position = UDim2.new(0.05, 0, 0, 0)
 title.BackgroundTransparency = 1
-title.Text = "LAPER GANK ADMIN"
-title.TextColor3 = Color3.fromRGB(255, 60, 60)
-title.Font = Enum.Font.GothamBold
-title.TextSize = 14
+title.Text = "LAPER GANK HUB"
+title.TextColor3 = Color3.fromRGB(0, 191, 255)
+title.Font = Enum.Font.GothamBlack
+title.TextSize = 13
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = topBar
 
--- Tombol Close
+-- Tombol Kontrol Android Style (Menggunakan .Activated)
 local closeBtn = Instance.new("TextButton")
-closeBtn.Size = UDim2.new(0, 22, 0, 22)
-closeBtn.Position = UDim2.new(1, -27, 0.5, -11)
-closeBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+closeBtn.Size = UDim2.new(0, 24, 0, 24)
+closeBtn.Position = UDim2.new(1, -30, 0.5, -12)
+closeBtn.BackgroundTransparency = 1
 closeBtn.Text = "×"
-closeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeBtn.TextColor3 = Color3.fromRGB(255, 60, 60)
 closeBtn.Font = Enum.Font.GothamBold
-closeBtn.TextSize = 16
+closeBtn.TextSize = 18
 closeBtn.Parent = topBar
-local uiCornerClose = Instance.new("UICorner")
-uiCornerClose.CornerRadius = UDim.new(1, 0)
-uiCornerClose.Parent = closeBtn
 
--- Tombol Minimize
 local minBtn = Instance.new("TextButton")
-minBtn.Size = UDim2.new(0, 22, 0, 22)
-minBtn.Position = UDim2.new(1, -54, 0.5, -11)
-minBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 65)
-minBtn.Text = "-"
+minBtn.Size = UDim2.new(0, 24, 0, 24)
+minBtn.Position = UDim2.new(1, -56, 0.5, -12)
+minBtn.BackgroundTransparency = 1
+minBtn.Text = "—"
 minBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
 minBtn.Font = Enum.Font.GothamBold
-minBtn.TextSize = 16
+minBtn.TextSize = 12
 minBtn.Parent = topBar
-local uiCornerMin = Instance.new("UICorner")
-uiCornerMin.CornerRadius = UDim.new(1, 0)
-uiCornerMin.Parent = minBtn
 
--- Dropdown Pilihan Player
+-- Dropdown Pilihan Player (Aksen Biru Neon)
 local dropdownBtn = Instance.new("TextButton")
-dropdownBtn.Size = UDim2.new(0.9, 0, 0, 35)
-dropdownBtn.Position = UDim2.new(0.05, 0, 0, 50)
-dropdownBtn.BackgroundColor3 = Color3.fromRGB(45, 45, 50)
+dropdownBtn.Size = UDim2.new(0.9, 0, 0, 38)
+dropdownBtn.Position = UDim2.new(0.05, 0, 0, 52)
+dropdownBtn.BackgroundColor3 = Color3.fromRGB(32, 32, 38)
 dropdownBtn.Text = "Pilih Target..."
 dropdownBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
 dropdownBtn.Font = Enum.Font.GothamMedium
 dropdownBtn.TextSize = 13
 dropdownBtn.Parent = mainFrame
-local uiCornerDrop = Instance.new("UICorner")
-uiCornerDrop.CornerRadius = UDim.new(0, 6)
-uiCornerDrop.Parent = dropdownBtn
+Instance.new("UICorner", dropdownBtn).CornerRadius = UDim.new(0, 8)
+local dropStroke = Instance.new("UIStroke")
+dropStroke.Color = Color3.fromRGB(0, 191, 255)
+dropStroke.Thickness = 1
+dropStroke.Parent = dropdownBtn
 
--- Tombol Teleport Utama
+-- Tombol Teleport Utama (Aksen Ungu Neon)
 local teleportBtn = Instance.new("TextButton")
-teleportBtn.Size = UDim2.new(0.9, 0, 0, 35)
-teleportBtn.Position = UDim2.new(0.05, 0, 0, 95)
-teleportBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+teleportBtn.Size = UDim2.new(0.9, 0, 0, 38)
+teleportBtn.Position = UDim2.new(0.05, 0, 0, 102)
+teleportBtn.BackgroundColor3 = Color3.fromRGB(32, 32, 38)
 teleportBtn.Text = "EXECUTE TELEPORT"
 teleportBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 teleportBtn.Font = Enum.Font.GothamBold
 teleportBtn.TextSize = 13
 teleportBtn.Parent = mainFrame
-local uiCornerTel = Instance.new("UICorner")
-uiCornerTel.CornerRadius = UDim.new(0, 6)
-uiCornerTel.Parent = teleportBtn
+Instance.new("UICorner", teleportBtn).CornerRadius = UDim.new(0, 8)
+local telStroke = Instance.new("UIStroke")
+telStroke.Color = Color3.fromRGB(138, 43, 226)
+telStroke.Thickness = 1
+telStroke.Parent = teleportBtn
 
--- Scrolling Frame Daftar Player
+-- Scrolling Frame Kisi Naskah Berbasis Kartu Daftar Player
 local scrollFrame = Instance.new("ScrollingFrame")
-scrollFrame.Size = UDim2.new(0.9, 0, 0, 100)
-scrollFrame.Position = UDim2.new(0.05, 0, 0, 90)
-scrollFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+scrollFrame.Size = UDim2.new(0.9, 0, 0, 110)
+scrollFrame.Position = UDim2.new(0.05, 0, 0, 95)
+scrollFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
 scrollFrame.BorderSizePixel = 0
-scrollFrame.ScrollBarThickness = 4
+scrollFrame.ScrollBarThickness = 2
 scrollFrame.Visible = false
 scrollFrame.ZIndex = 5
+scrollFrame.Active = true
 scrollFrame.Parent = mainFrame
-local uiCornerScroll = Instance.new("UICorner")
-uiCornerScroll.CornerRadius = UDim.new(0, 6)
-uiCornerScroll.Parent = scrollFrame
+Instance.new("UICorner", scrollFrame).CornerRadius = UDim.new(0, 8)
+local scrollStroke = Instance.new("UIStroke")
+scrollStroke.Color = Color3.fromRGB(0, 191, 255)
+scrollStroke.Thickness = 1
+scrollStroke.Parent = scrollFrame
+
 local uiListLayout = Instance.new("UIListLayout")
 uiListLayout.SortOrder = Enum.SortOrder.Name
-uiListLayout.Padding = UDim.new(0, 3)
+uiListLayout.Padding = UDim.new(0, 5)
+uiListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 uiListLayout.Parent = scrollFrame
+Instance.new("UIPadding", scrollFrame).PaddingTop = UDim.new(0, 4)
 
--- Icon Perkecil/Minimize (Bentuk Bundar)
-local minIcon = Instance.new("TextButton")
-minIcon.Size = UDim2.new(0, 45, 0, 45)
-minIcon.Position = UDim2.new(0.5, -22.5, 0.8, -22.5)
-minIcon.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-minIcon.Text = "LG"
-minIcon.TextColor3 = Color3.fromRGB(255, 255, 255)
-minIcon.Font = Enum.Font.GothamBold
-minIcon.TextSize = 14
+-- Floating Minimize Icon (Menggunakan Aset Roblox Spesifik Anda)
+local minIcon = Instance.new("ImageButton")
+minIcon.Size = UDim2.new(0, 50, 0, 50)
+minIcon.Position = UDim2.new(0.5, -25, 0.8, -25)
+minIcon.BackgroundColor3 = Color3.fromRGB(25, 25, 28)
+minIcon.Image = "rbxassetid://128042443413755"
+minIcon.ScaleType = Enum.ScaleType.Fit
 minIcon.Visible = false
+minIcon.Active = true
 minIcon.Parent = screenGui
-local uiCornerIcon = Instance.new("UICorner")
-uiCornerIcon.CornerRadius = UDim.new(1, 0)
-uiCornerIcon.Parent = minIcon
+Instance.new("UICorner", minIcon).CornerRadius = UDim.new(1, 0)
+local iconStroke = Instance.new("UIStroke")
+iconStroke.Color = Color3.fromRGB(0, 191, 255)
+iconStroke.Thickness = 2
+iconStroke.Parent = minIcon
 
 makeDraggable(minIcon, minIcon)
 
+-- -----------------------------------------------------------------------------
+-- SINKRONISASI AKTIVITAS DRIVER UTAMA (.ACTIVATED IMPLEMENTATION)
+-- -----------------------------------------------------------------------------
 local selectedPlayer = nil
 local isTeleporting = false
 
--- Logika Tombol Keluar & Perkecil
-closeBtn.MouseButton1Click:Connect(function() screenGui:Destroy() end)
-minBtn.MouseButton1Click:Connect(function()
-	mainFrame.Visible = false
-	minIcon.Visible = true
-	minIcon.Position = mainFrame.Position
-end)
-minIcon.MouseButton1Click:Connect(function()
-	minIcon.Visible = false
-	mainFrame.Visible = true
-	mainFrame.Position = minIcon.Position
+closeBtn.Activated:Connect(function() 
+	screenGui:Destroy() 
 end)
 
--- Update List Player Aktif
+minBtn.Activated:Connect(function()
+	mainFrame.Visible = false
+	minIcon.Visible = true
+	minIcon.Position = UDim2.new(0, mainFrame.AbsolutePosition.X + 105, 0, mainFrame.AbsolutePosition.Y + 85)
+end)
+
+minIcon.Activated:Connect(function()
+	minIcon.Visible = false
+	mainFrame.Visible = true
+end)
+
+-- Sinkronisasi Pengisian Kartu Player ke Dalam Kisi
 local function updatePlayerList()
 	for _, child in ipairs(scrollFrame:GetChildren()) do
 		if child:IsA("TextButton") then child:Destroy() end
 	end
+	
 	for _, player in ipairs(Players:GetPlayers()) do
 		if player ~= localPlayer then
 			local btn = Instance.new("TextButton")
-			btn.Size = UDim2.new(1, 0, 0, 28)
-			btn.BackgroundColor3 = Color3.fromRGB(55, 55, 60)
-			btn.Text = player.Name
+			btn.Size = UDim2.new(0.95, 0, 0, 32)
+			btn.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
+			btn.Text = "  " .. player.Name
 			btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-			btn.Font = Enum.Font.Gotham
+			btn.Font = Enum.Font.GothamMedium
 			btn.TextSize = 12
+			btn.TextXAlignment = Enum.TextXAlignment.Left
 			btn.ZIndex = 6
 			btn.Parent = scrollFrame
+			Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
 			
-			local btnCorner = Instance.new("UICorner")
-			btnCorner.CornerRadius = UDim.new(0, 4)
-			btnCorner.Parent = btn
-			
-			btn.MouseButton1Click:Connect(function()
+			btn.Activated:Connect(function()
 				selectedPlayer = player
 				dropdownBtn.Text = player.Name
 				scrollFrame.Visible = false
@@ -249,14 +270,14 @@ local function updatePlayerList()
 	end
 end
 
-dropdownBtn.MouseButton1Click:Connect(function()
+dropdownBtn.Activated:Connect(function()
 	if isTeleporting then return end
 	scrollFrame.Visible = not scrollFrame.Visible
 	if scrollFrame.Visible then updatePlayerList() end
 end)
 
--- Sistem Eksekusi Teleport dengan Loading Detik di Button
-teleportBtn.MouseButton1Click:Connect(function()
+-- Sistem Driver Teleport Asli Menggunakan .Activated Sentuh Layar
+teleportBtn.Activated:Connect(function()
 	if isTeleporting then return end
 	
 	if not selectedPlayer or not selectedPlayer.Character or not selectedPlayer.Character:FindFirstChild("HumanoidRootPart") then
@@ -288,7 +309,7 @@ teleportBtn.MouseButton1Click:Connect(function()
 	end
 	
 	-- Reset State Tombol
-	teleportBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+	teleportBtn.BackgroundColor3 = Color3.fromRGB(32, 32, 38)
 	teleportBtn.Text = "EXECUTE TELEPORT"
 	dropdownBtn.Text = "Pilih Target..."
 	selectedPlayer = nil
