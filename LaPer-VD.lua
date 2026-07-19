@@ -1,10 +1,11 @@
 -- =============================================================================
--- PROJECT: LAPER GANK ADMIN - MOBILE SWITCH DASHBOARD (STABLE ANTI-BLANK)
+-- PROJECT: LAPER GANK ADMIN - PREMIUM SLIDER SPEED HUD
 -- TEMA: Android Mobile App (Abu-abu Gelap, Ungu & Biru Neon)
--- MECHANIC: TextBox + Safe Static Switch (No-Tween Driver)
+-- MECHANIC: Visual Slider Controller & Physical WalkSpeed Emulator Bypass
 -- =============================================================================
 
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
 local StarterGui = game:GetService("StarterGui")
@@ -36,7 +37,7 @@ screenGui.ResetOnSpawn = false
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent = targetParent
 
-showNotification("LaperGank", "Dasbor Switch Premium Siap", 5)
+showNotification("LaperGank", "Dasbor Slider Premium Siap", 5)
 
 -- -----------------------------------------------------------------------------
 -- GLOBAL STATE MAPPING
@@ -45,7 +46,7 @@ local selectedPlayer = nil
 local isTeleporting = false
 local speedSettings = {
 	Enabled = false,
-	TargetSpeed = 50
+	TargetSpeed = 16 -- Default bawaan Roblox
 }
 
 -- -----------------------------------------------------------------------------
@@ -77,11 +78,11 @@ local function makeDraggable(gui, dragHandle)
 end
 
 -- -----------------------------------------------------------------------------
--- VISUAL RENDER ENGINE: FLOATING DASHBOARD GUI
+-- VISUAL RENDER ENGINE: LUXURY FLOATING DASHBOARD
 -- -----------------------------------------------------------------------------
 local mainFrame = Instance.new("Frame")
-mainFrame.Size = UDim2.new(0, 290, 0, 220)
-mainFrame.Position = UDim2.new(0.5, -145, 0.4, -110)
+mainFrame.Size = UDim2.new(0, 290, 0, 300)
+mainFrame.Position = UDim2.new(0.5, -145, 0.4, -150)
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
@@ -148,7 +149,7 @@ minBtn.TextSize = 14
 minBtn.Parent = topBar
 
 local contentGrid = Instance.new("Frame")
-contentGrid.Size = UDim2.new(0.92, 0, 0, 160)
+contentGrid.Size = UDim2.new(0.92, 0, 0, 230)
 contentGrid.Position = UDim2.new(0.04, 0, 0, 52)
 contentGrid.BackgroundTransparency = 1
 contentGrid.Parent = mainFrame
@@ -198,9 +199,9 @@ local telStroke = Instance.new("UIStroke")
 telStroke.Color = Color3.fromRGB(138, 43, 226)
 telStroke.Parent = teleportBtn
 
--- CARD 2: SPEED INPUT + STATIC TOGGLE SWITCH (Bypass Anti-Cheat & No-Tween)
+-- CARD 2: EXTRA SPEED SLIDER SECTOR (Abu-abu Gelap, Aksen Ungu/Biru)
 local cardSpeed = Instance.new("Frame")
-cardSpeed.Size = UDim2.new(1, 0, 0, 65)
+cardSpeed.Size = UDim2.new(1, 0, 0, 75)
 cardSpeed.BackgroundColor3 = Color3.fromRGB(26, 26, 32)
 cardSpeed.BorderSizePixel = 0
 cardSpeed.LayoutOrder = 2
@@ -211,60 +212,36 @@ strokeSpeed.Color = Color3.fromRGB(45, 45, 55)
 strokeSpeed.Parent = cardSpeed
 
 local speedLabel = Instance.new("TextLabel")
-speedLabel.Size = UDim2.new(0.5, 0, 0, 20)
-speedLabel.Position = UDim2.new(0.05, 0, 0, 6)
+speedLabel.Size = UDim2.new(0.9, 0, 0, 25)
+speedLabel.Position = UDim2.new(0.05, 0, 0, 5)
 speedLabel.BackgroundTransparency = 1
-speedLabel.Text = "MASUKKAN SPEED:"
+speedLabel.Text = "WALKSPEED MURNI: 16 STUD"
 speedLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 speedLabel.Font = Enum.Font.GothamBold
-speedLabel.TextSize = 10
+speedLabel.TextSize = 11
 speedLabel.TextXAlignment = Enum.TextXAlignment.Left
 speedLabel.Parent = cardSpeed
 
-local inputSpeed = Instance.new("TextBox")
-inputSpeed.Size = UDim2.new(0.45, 0, 0, 30)
-inputSpeed.Position = UDim2.new(0.05, 0, 0, 26)
-inputSpeed.BackgroundColor3 = Color3.fromRGB(16, 16, 20)
-inputSpeed.Text = "50"
-inputSpeed.TextColor3 = Color3.fromRGB(0, 191, 255)
-inputSpeed.PlaceholderText = "Angka..."
-inputSpeed.Font = Enum.Font.GothamBold
-inputSpeed.TextSize = 14
-inputSpeed.ClearTextOnFocus = false
-inputSpeed.Parent = cardSpeed
-Instance.new("UICorner", inputSpeed).CornerRadius = UDim.new(0, 6)
-local inputStroke = Instance.new("UIStroke")
-inputStroke.Color = Color3.fromRGB(45, 45, 55)
-inputStroke.Parent = inputSpeed
+-- Komponen Rel Slider (Garis Biru)
+local sliderTrack = Instance.new("Frame")
+sliderTrack.Size = UDim2.new(0.9, 0, 0, 6)
+sliderTrack.Position = UDim2.new(0.05, 0, 0, 45)
+sliderTrack.BackgroundColor3 = Color3.fromRGB(16, 16, 20)
+sliderTrack.BorderSizePixel = 0
+sliderTrack.Parent = cardSpeed
+Instance.new("UICorner", sliderTrack).CornerRadius = UDim.new(0, 3)
+local trackStroke = Instance.new("UIStroke")
+trackStroke.Color = Color3.fromRGB(0, 191, 255)
+trackStroke.Parent = sliderTrack
 
--- Sakelar Switch Murni Instan (Tanpa Stroke Dinamis & Tanpa Tween)
-local switchTrack = Instance.new("TextButton")
-switchTrack.Size = UDim2.new(0, 45, 0, 22)
-switchTrack.Position = UDim2.new(0.95, -45, 0.5, -11)
-switchTrack.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
-switchTrack.Text = ""
-switchTrack.BorderSizePixel = 0
-switchTrack.Parent = cardSpeed
-Instance.new("UICorner", switchTrack).CornerRadius = UDim.new(1, 0)
-
-local switchBall = Instance.new("Frame")
-switchBall.Size = UDim2.new(0, 16, 0, 16)
-switchBall.Position = UDim2.new(0, 3, 0.5, -8)
-switchBall.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
-switchBall.BorderSizePixel = 0
-switchBall.Parent = switchTrack
-Instance.new("UICorner", switchBall).CornerRadius = UDim.new(1, 0)
-
-local statusLabel = Instance.new("TextLabel")
-statusLabel.Size = UDim2.new(0, 40, 0, 20)
-statusLabel.Position = UDim2.new(0.95, -95, 0.5, -10)
-statusLabel.BackgroundTransparency = 1
-statusLabel.Text = "OFF"
-statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-statusLabel.Font = Enum.Font.GothamBlack
-statusLabel.TextSize = 11
-statusLabel.TextXAlignment = Enum.TextXAlignment.Right
-statusLabel.Parent = cardSpeed
+-- Tombol Pin Geser Slider (Bulatan Ungu)
+local sliderBtn = Instance.new("TextButton")
+sliderBtn.Size = UDim2.new(0, 16, 0, 16)
+sliderBtn.Position = UDim2.new(0, 0, 0.5, -8)
+sliderBtn.BackgroundColor3 = Color3.fromRGB(138, 43, 226)
+sliderBtn.Text = ""
+sliderBtn.Parent = sliderTrack
+Instance.new("UICorner", sliderBtn).CornerRadius = UDim.new(1, 0)
 
 -- DROPDOWN OVERLAY LIST ELEMENT
 local scrollFrame = Instance.new("ScrollingFrame")
@@ -289,7 +266,7 @@ uiListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 uiListLayout.Parent = scrollFrame
 Instance.new("UIPadding", scrollFrame).PaddingTop = UDim.new(0, 5)
 
--- Floating Minimize Icon
+-- Floating Minimize Icon (Coordinate-Synced)
 local minIcon = Instance.new("ImageButton")
 minIcon.Size = UDim2.new(0, 54, 0, 54)
 minIcon.Position = UDim2.new(0.5, -27, 0.2, 0)
@@ -312,12 +289,6 @@ makeDraggable(minIcon, minIcon)
 -- -----------------------------------------------------------------------------
 closeBtn.Activated:Connect(function()
 	speedSettings.Enabled = false
-	pcall(function()
-		local char = localPlayer.Character
-		if char and char:FindFirstChild("Humanoid") then
-			char.Humanoid.WalkSpeed = 16
-		end
-	end)
 	screenGui:Destroy()
 end)
 
@@ -389,67 +360,70 @@ teleportBtn.Activated:Connect(function()
 	isTeleporting = false
 end)
 
-inputSpeed.FocusLost:Connect(function()
-	local numericValue = tonumber(inputSpeed.Text)
-	if numericValue then
-		speedSettings.TargetSpeed = numericValue
+-- -----------------------------------------------------------------------------
+-- INTERAKSI SLIDER GERAK MANDIRI (NATIVE DRAG)
+-- -----------------------------------------------------------------------------
+local minSpeed = 16
+local maxSpeed = 150
+
+local function updateSliderPosition(inputPosition)
+	local trackAbsolutePos = sliderTrack.AbsolutePosition.X
+	local trackAbsoluteSize = sliderTrack.AbsoluteSize.X
+	local percentage = math.clamp((inputPosition.X - trackAbsolutePos) / trackAbsoluteSize, 0, 1)
+	
+	sliderBtn.Position = UDim2.new(percentage, -8, 0.5, -8)
+	
+	-- Menghitung nilai konversi kecepatan murni murni
+	local calculatedSpeed = math.floor(minSpeed + (percentage * (maxSpeed - minSpeed)))
+	speedSettings.TargetSpeed = calculatedSpeed
+	
+	if calculatedSpeed > 16 then
+		speedSettings.Enabled = true
+		speedLabel.Text = "WALKSPEED MURNI: " .. calculatedSpeed .. " STUD [ON]"
+		speedLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
 	else
-		inputSpeed.Text = tostring(speedSettings.TargetSpeed)
+		speedSettings.Enabled = false
+		speedLabel.Text = "WALKSPEED MURNI: 16 STUD [OFF]"
+		speedLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+	end
+end
+
+local isSliding = false
+sliderBtn.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		isSliding = true
+	end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+	if isSliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+		updateSliderPosition(input.Position)
+	end
+end)
+
+UserInputService.InputEnded:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+		isSliding = false
 	end
 end)
 
 -- -----------------------------------------------------------------------------
--- AMAN & INSTAN TOGGLE SAKELAR INTERACTION (Anti-Memory Lock)
+-- EMULATOR BYPASS FISIKA MOVEMENT (Anti-Cheat Tembus)
 -- -----------------------------------------------------------------------------
-switchTrack.Activated:Connect(function()
-	speedSettings.Enabled = not speedSettings.Enabled
-	
-	local numericValue = tonumber(inputSpeed.Text)
-	if numericValue then speedSettings.TargetSpeed = numericValue end
-	
-	if speedSettings.Enabled then
-		-- Pindah Posisi Instan Murni Tanpa Tween Driver
-		switchBall.Position = UDim2.new(1, -19, 0.5, -8)
-		switchTrack.BackgroundColor3 = Color3.fromRGB(30, 70, 30)
-		statusLabel.Text = "ON"
-		statusLabel.TextColor3 = Color3.fromRGB(100, 255, 100)
-	else
-		switchBall.Position = UDim2.new(0, 3, 0.5, -8)
-		switchTrack.BackgroundColor3 = Color3.fromRGB(60, 30, 30)
-		statusLabel.Text = "OFF"
-		statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
-		
+RunService.Heartbeat:Connect(function(deltaTime)
+	if speedSettings.Enabled and speedSettings.TargetSpeed > 16 then
 		pcall(function()
 			local char = localPlayer.Character
-			if char and char:FindFirstChild("Humanoid") then
-				char.Humanoid.WalkSpeed = 16
+			local hrp = char and char:FindFirstChild("HumanoidRootPart")
+			local hum = char and char:FindFirstChild("Humanoid")
+			
+			if hrp and hum and hum.MoveDirection.Magnitude > 0 then
+				-- Tambahan Stud per detik disinkronkan murni dengan deltaTime real-time frame
+				local extraStuds = (speedSettings.TargetSpeed - 16) * deltaTime
+				hrp.CFrame = hrp.CFrame + (hum.MoveDirection * extraStuds)
 			end
 		end)
 	end
-end)
-
--- -----------------------------------------------------------------------------
--- PERGERAKAN FISIK BYPASS ENGINE CORE
--- -----------------------------------------------------------------------------
-RunService.Heartbeat:Connect(function(deltaTime)
-	pcall(function()
-		local char = localPlayer.Character
-		local hrp = char and char:FindFirstChild("HumanoidRootPart")
-		local hum = char and char:FindFirstChild("Humanoid")
-		
-		if hrp and hum then
-			if speedSettings.Enabled and speedSettings.TargetSpeed > 16 then
-				if hum.MoveDirection.Magnitude > 0 then
-					local extraStuds = (speedSettings.TargetSpeed - 16) * deltaTime
-					hrp.CFrame = hrp.CFrame + (hum.MoveDirection * extraStuds)
-				end
-			else
-				if hum.WalkSpeed ~= 16 and not speedSettings.Enabled then
-					hum.WalkSpeed = 16
-				end
-			end
-		end
-	end)
 end)
 
 Players.PlayerAdded:Connect(updatePlayerList)
