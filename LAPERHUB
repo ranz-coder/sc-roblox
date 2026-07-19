@@ -10,10 +10,10 @@ local function sendSystemNotification(title, msg, duration)
     end)
 end
 local games = {
-    [93978595733734] = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI.lua", --Violence District
+    [93978595733734] = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI", --Violence District
 }
 
-local fallbackUniversalURL = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI.lua"
+local fallbackUniversalURL = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI"
 
 local currentPlaceId = game.PlaceId
 local targetScriptURL = games[currentPlaceId]
