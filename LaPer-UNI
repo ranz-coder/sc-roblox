@@ -1,9 +1,3 @@
--- =============================================================================
--- PROJECT: LAPER GANK ADMIN - PREMIUM NEON GRADIENT MOBILE HUD
--- TEMA: Cyberpunk Android Dashboard (Custom Asset Background)
--- OPTIMASI: 100% Delta Safe - RenderStepped Animated Border & Auto Restoration
--- =============================================================================
-
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
@@ -36,21 +30,14 @@ screenGui.ResetOnSpawn = false
 screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent = targetParent
 
-showNotification("LaperGank", "Dasbor Animasi Premium Siap", 5)
+showNotification("LaperGank", "UI siap", 5)
 
--- -----------------------------------------------------------------------------
--- GLOBAL STATE MAPPING
--- -----------------------------------------------------------------------------
 local selectedPlayer = nil
 local isTeleporting = false
 local speedSettings = {
 	Enabled = false,
 	TargetSpeed = 50
 }
-
--- -----------------------------------------------------------------------------
--- ADVANCED DYNAMIC DRAG MODULE (Kunci Koordinat Bebas Lompat)
--- -----------------------------------------------------------------------------
 local function makeDraggable(gui, dragHandle)
 	local dragging, dragInput, dragStart, startPos
 	dragHandle.InputBegan:Connect(function(input)
@@ -76,36 +63,29 @@ local function makeDraggable(gui, dragHandle)
 	end)
 end
 
--- -----------------------------------------------------------------------------
--- VISUAL RENDER ENGINE: CUSTOM ASSET FLOATING DASHBOARD
--- -----------------------------------------------------------------------------
-
--- Main Frame (Sekarang menggunakan ImageLabel untuk memuat Aset Background Khusus Anda)
 local mainFrame = Instance.new("ImageLabel")
 mainFrame.Size = UDim2.new(0, 290, 0, 280)
 mainFrame.Position = UDim2.new(0.5, -145, 0.4, -140)
 mainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
-mainFrame.Image = "rbxassetid://99939788373154" -- Menggunakan Aset Gambar Khusus Anda
+mainFrame.Image = "rbxassetid://99939788373154"
 mainFrame.ScaleType = Enum.ScaleType.Stretch
 mainFrame.BorderSizePixel = 0
 mainFrame.Active = true
 mainFrame.Parent = screenGui
 Instance.new("UICorner", mainFrame).CornerRadius = UDim.new(0, 14)
 
--- ANIMATED OUTLINE GRADIENT CONTROLLER
 local mainStroke = Instance.new("UIStroke")
 mainStroke.Thickness = 2.5
 mainStroke.Parent = mainFrame
 
 local strokeGradient = Instance.new("UIGradient")
 strokeGradient.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 226)), -- Ungu Cyberpunk
-	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 191, 255)), -- Biru Neon
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(138, 43, 226))   -- Kembali ke Ungu
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(138, 43, 226)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 191, 255)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(138, 43, 226))
 })
 strokeGradient.Parent = mainStroke
 
--- Driver Animasi Putar Efek Neon Stroke (100% Ringan & Bebas Crash)
 RunService.RenderStepped:Connect(function()
 	strokeGradient.Rotation = (strokeGradient.Rotation + 2) % 360
 end)
@@ -119,7 +99,7 @@ lineGlow.Parent = mainFrame
 
 local topBar = Instance.new("Frame")
 topBar.Size = UDim2.new(1, 0, 0, 42)
-topBar.BackgroundTransparency = 1 -- Transparan agar gambar background utama menembus ke atas
+topBar.BackgroundTransparency = 1
 topBar.BorderSizePixel = 0
 topBar.Parent = mainFrame
 
@@ -167,11 +147,10 @@ gridLayout.SortOrder = Enum.SortOrder.LayoutOrder
 gridLayout.Padding = UDim.new(0, 10)
 gridLayout.Parent = contentGrid
 
--- CARD 1: SEKTOR TELEPORTATION SYSTEM
 local cardTP = Instance.new("Frame")
 cardTP.Size = UDim2.new(1, 0, 0, 95)
 cardTP.BackgroundColor3 = Color3.fromRGB(26, 26, 32)
-cardTP.BackgroundTransparency = 0.2 -- Sedikit transparan agar menyatu dengan aset background baru
+cardTP.BackgroundTransparency = 0.2 
 cardTP.BorderSizePixel = 0
 cardTP.LayoutOrder = 1
 cardTP.Parent = contentGrid
@@ -210,7 +189,6 @@ local telStroke = Instance.new("UIStroke")
 telStroke.Color = Color3.fromRGB(138, 43, 226)
 telStroke.Parent = teleportBtn
 
--- CARD 2: SEKTOR WALKSPEED MURNI ROBLOX + SLIDER SWITCH
 local cardSpeed = Instance.new("Frame")
 cardSpeed.Size = UDim2.new(1, 0, 0, 52)
 cardSpeed.BackgroundColor3 = Color3.fromRGB(26, 26, 32)
@@ -269,7 +247,6 @@ statusLabel.TextSize = 11
 statusLabel.TextXAlignment = Enum.TextXAlignment.Right
 statusLabel.Parent = cardSpeed
 
--- DROPDOWN OVERLAY LIST ELEMENT
 local scrollFrame = Instance.new("ScrollingFrame")
 scrollFrame.Size = UDim2.new(0.9, 0, 0, 140)
 scrollFrame.Position = UDim2.new(0.05, 0, 0, 95)
@@ -293,7 +270,6 @@ uiListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 uiListLayout.Parent = scrollFrame
 Instance.new("UIPadding", scrollFrame).PaddingTop = UDim.new(0, 5)
 
--- Floating Minimize Icon (Coordinate-Synced)
 local minIcon = Instance.new("ImageButton")
 minIcon.Size = UDim2.new(0, 54, 0, 54)
 minIcon.Position = UDim2.new(0.5, -27, 0.2, 0)
@@ -311,9 +287,6 @@ iconStroke.Parent = minIcon
 
 makeDraggable(minIcon, minIcon)
 
--- -----------------------------------------------------------------------------
--- MECHANIC CORE OPERATIONAL BINDINGS
--- -----------------------------------------------------------------------------
 closeBtn.Activated:Connect(function()
 	speedSettings.Enabled = false
 	pcall(function()
@@ -393,9 +366,6 @@ teleportBtn.Activated:Connect(function()
 	isTeleporting = false
 end)
 
--- -----------------------------------------------------------------------------
--- ADVANCED VELOCITY BYPASS LOOP
--- -----------------------------------------------------------------------------
 inputSpeed.FocusLost:Connect(function()
 	local numericValue = tonumber(inputSpeed.Text)
 	if numericValue then
