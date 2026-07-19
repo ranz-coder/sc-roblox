@@ -51,7 +51,7 @@ local function sendLogToWeb(statusMessage)
 end
 
 local games = {
-	[93978595733734] = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-VD",
+	[93978595733734] = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI",
 }
 
 local fallbackUniversalURL = "https://raw.githubusercontent.com/ranz-coder/roblox-sc/refs/heads/script/LaPer-UNI"
